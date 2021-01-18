@@ -27,7 +27,7 @@ composer require hexadog/laravel-translation-manager
 
 The package will automatically register its service provider.
 
-To publish the config file to config/themes-manager.php run:
+To publish the config file to config/translation-manager.php run:
 ```shell
 php artisan vendor:publish --provider="Hexadog\TranslationManager\Providers\PackageServiceProvider"
 ```
@@ -37,7 +37,6 @@ php artisan vendor:publish --provider="Hexadog\TranslationManager\Providers\Pack
 Translation Manager has many features to help you working with translation
 
 - [Configuration](#configuration)
-- [Basic usage](#basic-usage)
 - [Artisan Commands](#artisan-commands)
   - [Find unused translation](#find-unused-translation)
   - [Find missing translation](#find-missing-translation)
@@ -48,16 +47,31 @@ This is the default contents of the configuration:
 <?php
 
 return [
-    
+    // Directories to search in.
+	'directories' => [
+		'app',
+		'resources',
+	],
+
+	// File Extensions to search for.
+	'extensions' => [
+		'php',
+		'js',
+	],
+
+	// Translation function names.
+	// If your function name contains $ escape it using \$ .
+	'functions' => [
+		'__',
+		'_t',
+		'@lang',
+	],
+
+	// Indicates weather you need to sort the translations alphabetically
+	// by original strings (keys).
+	// It helps navigate a translation file and detect possible duplicates.
+	'sort-keys' => true,
 ];
-```
-
-### Basic usage
-There is multiple ways to work with Themes Manager. You can either set a new theme manually, using Web Middleware or Route Middleware.
-
-Use the following method to set a theme manually at any time (in your controller for example):
-```php
-ThemesManager::set('one');
 ```
 
 ### Artisan Commands
@@ -95,19 +109,6 @@ Find all missing translation in your app for specifig language
 ```shell
 php artisan translation:missing --lang=fr
 ```
-
-Automatically fix all missing translation found in your app
-```shell
-php artisan translation:missing --fix
-```
-
-<!-- omit in toc -->
-## Related projects
-- [Laravel Theme Installer](https://github.com/hexadog/laravel-theme-installer): Composer plugin to install `laravel-theme` packages outside vendor directory .
-
-<!-- omit in toc -->
-## Credits
-- Logo made by [DesignEvo free logo creator](https://www.designevo.com/logo-maker/)
 
 <!-- omit in toc -->
 ## License
