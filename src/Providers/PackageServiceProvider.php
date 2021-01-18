@@ -5,6 +5,7 @@ namespace Hexadog\TranslationManager\Providers;
 use ReflectionClass;
 use Illuminate\Support\Str;
 use Illuminate\Routing\Router;
+use Illuminate\Filesystem\Filesystem;
 use Hexadog\TranslationManager\Finder;
 use Hexadog\TranslationManager\Parser;
 use Illuminate\Foundation\AliasLoader;
@@ -13,7 +14,6 @@ use Hexadog\TranslationManager\Console\Commands;
 use Illuminate\Contracts\Translation\Translator;
 use Hexadog\TranslationManager\TranslationManager;
 use Hexadog\TranslationManager\Facades\TranslationManager as TranslationManagerFacade;
-use Illuminate\Filesystem\Filesystem;
 
 class PackageServiceProvider extends ServiceProvider
 {

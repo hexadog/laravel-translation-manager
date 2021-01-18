@@ -3,6 +3,7 @@
 namespace Hexadog\TranslationManager\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 
 class UnusedCommand extends Command
 {
@@ -36,13 +37,7 @@ class UnusedCommand extends Command
         $result = [];
 
         $strings = \TranslationManager::findUnused($this->option('namespace'), $this->option('lang'));
-
-        // Count total strings found
-        $total = array_reduce($strings, function ($result, $namespaces) {
-            return $result + array_reduce($namespaces, function ($result, $namespace) {
-                return $result + count($namespace);
-            }, 0);
-        }, 0);
+        $total = 0;
 
         foreach ($strings as $lang => $namespaces) {
             foreach ($namespaces as $namespace => $translations) {
@@ -54,7 +49,18 @@ class UnusedCommand extends Command
                             'key' => $key,
                             'string' => $string
                         ];
+                    } else {
+                        foreach(Arr::dot($string) as $k => $string) {
+                            $result[] = [
+                                'lang' => $lang,
+                                'namespace' => $namespace,
+                                'key' => sprintf('%s.%s', $key, $k),
+                                'string' => $string
+                            ];
+                        }
                     }
+
+                    $total++;
                 }
             }
         }

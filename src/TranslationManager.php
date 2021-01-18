@@ -124,34 +124,36 @@ class TranslationManager extends NamespacedItemResolver
                     }
 
                     return false;
+                })->mapWithKeys(function ($value, $key) use ($namespace) {
+                    return [$key => ltrim($value, $namespace !== '' ? $namespace . '::' : '')];
                 })->toArray());
             }
         }
 
         $missingStrings = $this->arrayUniqueRecursive($missingStrings);
 
-        if ($autoFix) {
-            foreach ($missingStrings as $lang => $namespaces) {
-                foreach ($namespaces as $namespace => $strings) {
-                    foreach ($strings as $string) {
-                        $filePath = $this->getTranslationFilePath($string, $lang);
-                        $translatedStrings = require $filePath;
+        // if ($autoFix) {
+        //     foreach ($missingStrings as $lang => $namespaces) {
+        //         foreach ($namespaces as $namespace => $strings) {
+        //             foreach ($strings as $string) {
+        //                 $filePath = $this->getTranslationFilePath($string, $lang);
+        //                 $translatedStrings = require $filePath;
 
-                        // Remove namespace if there is any
-                        if ($pos = strpos($string, '::') !== false) {
-                            $string = substr($string, $pos + 2, strlen($string));
-                        }
+        //                 // Remove namespace if there is any
+        //                 if ($pos = strpos($string, '::') !== false) {
+        //                     $string = substr($string, $pos + 2, strlen($string));
+        //                 }
 
-                        // Remove first segment : it's the lang filename
-                        $string = substr($string, strpos($string, '.') ? strpos($string, '.') + 1 : 0, strlen($string));
+        //                 // Remove first segment : it's the lang filename
+        //                 $string = substr($string, strpos($string, '.') ? strpos($string, '.') + 1 : 0, strlen($string));
 
-                        $translatedStrings = array_merge_recursive($translatedStrings, $this->undotStringToArray($string));
+        //                 $translatedStrings = array_merge_recursive($translatedStrings, $this->undotStringToArray($string));
 
-                        $this->writeTranslationsToFile($translatedStrings, $filePath);
-                    }
-                }
-            }
-        }
+        //                 $this->writeTranslationsToFile($translatedStrings, $filePath);
+        //             }
+        //         }
+        //     }
+        // }
 
         return $missingStrings;
     }
@@ -201,8 +203,19 @@ class TranslationManager extends NamespacedItemResolver
 
                     foreach ($translations as $key => $value) {
                         $key = $file->getBasename('.php') . '.' . $key;
-                        if (!in_array($key, $strings)) {
-                            $unusedStrings[$language][$namespace][$key] = $value;
+
+                        if (is_array($value)) {
+                            foreach(Arr::dot($value) as $k => $val) { 
+                                $searchKey = $namespace !== '' ? $namespace . '::' . $key . '.' . $k : $key . '.' . $k;
+                                if (!in_array($searchKey, $strings)) {
+                                    $unusedStrings[$language][$namespace][$key . '.' . $k] = $val;
+                                }
+                            }
+                        } else {
+                            $searchKey = $namespace !== '' ? $namespace . '::' . $key : $key;
+                            if (!in_array($searchKey, $strings)) {
+                                $unusedStrings[$language][$namespace][$key] = $value;
+                            }
                         }
                     }
                 }

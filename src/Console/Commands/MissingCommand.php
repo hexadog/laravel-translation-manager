@@ -36,11 +36,7 @@ class MissingCommand extends Command
         $result = [];
 
         $strings = \TranslationManager::findMissing($this->option('namespace'), $this->option('lang'), boolval($this->option('fix')));
-        
-        // Count total strings found
-        $total = array_reduce($strings, function ($result, $item) {
-            return $result + count($item);
-        }, 0);
+        $total = 0;
         
         foreach ($strings as $lang => $namespaces) {
             foreach ($namespaces as $namespace => $strings) {
@@ -50,6 +46,8 @@ class MissingCommand extends Command
                         'namespace' => $namespace,
                         'string' => $string
                     ];
+
+                    $total++;
                 }
             }
         }
@@ -58,7 +56,7 @@ class MissingCommand extends Command
             $this->error(sprintf('%d missing translation found', $total));
             $this->table($this->headers, $result);
         } else {
-            $this-> comment('No missing translation');
+            $this->comment('No missing translation');
         }
     }
 }
