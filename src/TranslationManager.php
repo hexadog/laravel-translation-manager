@@ -205,7 +205,7 @@ class TranslationManager extends NamespacedItemResolver
                         $key = $file->getBasename('.php') . '.' . $key;
 
                         if (is_array($value)) {
-                            foreach(Arr::dot($value) as $k => $val) { 
+                            foreach (Arr::dot($value) as $k => $val) {
                                 $searchKey = $namespace !== '' ? $namespace . '::' . $key . '.' . $k : $key . '.' . $k;
                                 if (!in_array($searchKey, $strings)) {
                                     $unusedStrings[$language][$namespace][$key . '.' . $k] = $val;
@@ -269,7 +269,7 @@ class TranslationManager extends NamespacedItemResolver
      * Prepare namespaces
      *
      * @param string|array $namespaces
-	 * 
+     *
      * @return Collection
      */
     protected function prepareNamespaces($namespaces = null): Collection
@@ -390,7 +390,7 @@ class TranslationManager extends NamespacedItemResolver
      * Write the lines of the inner array of the language file.
      *
      * @param $array
-	 * 
+     *
      * @return string
      */
     private function stringLineMaker($array, $prepend = '')

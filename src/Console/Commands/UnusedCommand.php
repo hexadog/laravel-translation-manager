@@ -50,7 +50,7 @@ class UnusedCommand extends Command
                             'string' => $string
                         ];
                     } else {
-                        foreach(Arr::dot($string) as $k => $string) {
+                        foreach (Arr::dot($string) as $k => $string) {
                             $result[] = [
                                 'lang' => $lang,
                                 'namespace' => $namespace,
