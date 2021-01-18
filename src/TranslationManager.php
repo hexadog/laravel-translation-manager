@@ -125,7 +125,7 @@ class TranslationManager extends NamespacedItemResolver
 
                     return false;
                 })->mapWithKeys(function ($value, $key) use ($namespace) {
-                    return [$key => ltrim($value, $namespace !== '' ? $namespace . '::' : '')];
+                    return [$key => $namespace !== '' ? preg_replace('/^' . $namespace . '::/', '', $value) : ''];
                 })->toArray());
             }
         }
