@@ -2,7 +2,6 @@
 
 namespace Hexadog\TranslationManager;
 
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Config;
 use Symfony\Component\Finder\Finder as SymfonyFinder;
 use Hexadog\TranslationManager\Contracts\Finder as ContractsFinder;
