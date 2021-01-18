@@ -1,5 +1,3 @@
-<p align="center"><img src="https://i.ibb.co/RbnsDrr/logo.png"></p>
-
 <p align="center">
     <a href="https://packagist.org/packages/hexadog/laravel-translation-manager">
         <img src="https://poser.pugx.org/hexadog/laravel-translation-manager/v" alt="Latest Stable Version">
