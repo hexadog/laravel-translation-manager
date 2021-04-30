@@ -44,7 +44,7 @@ class MissingCommand extends Command
                     $result[] = [
                         'lang' => $lang,
                         'namespace' => $namespace,
-                        'string' => $string
+                        'string' => $string,
                     ];
 
                     $total++;

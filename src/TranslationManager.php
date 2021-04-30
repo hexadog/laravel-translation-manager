@@ -2,17 +2,16 @@
 
 namespace Hexadog\TranslationManager;
 
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Config;
-use Hexadog\TranslationManager\Extractor;
 use Hexadog\TranslationManager\Contracts\Finder;
 use Hexadog\TranslationManager\Contracts\Parser;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\NamespacedItemResolver;
+use Illuminate\Support\Str;
 
 class TranslationManager extends NamespacedItemResolver
 {
@@ -81,12 +80,12 @@ class TranslationManager extends NamespacedItemResolver
      */
     public function addSupportedLanguage($lang)
     {
-        if (!is_array($lang)) {
+        if (! is_array($lang)) {
             $lang = [$lang];
         }
 
         foreach ($lang as $l) {
-            if (!in_array($l, $this->languages)) {
+            if (! in_array($l, $this->languages)) {
                 $this->languages[] = $l;
             }
         }
@@ -108,7 +107,7 @@ class TranslationManager extends NamespacedItemResolver
         $usedStrings = $this->extractor->extract();
 
         // If no language provided, search for all languages supported by application
-        if (is_null($languages) || (is_array($languages) && !count($languages))) {
+        if (is_null($languages) || (is_array($languages) && ! count($languages))) {
             $languages = $this->getSupportedLanguages();
         }
 
@@ -120,7 +119,7 @@ class TranslationManager extends NamespacedItemResolver
             foreach ($hints as $namespace => $path) {
                 $missingStrings[$language][$namespace] = $this->sortIfEnabled($usedStrings->filter(function ($key) use ($language, $namespace) {
                     if ($namespace === '' || Str::startsWith($key, $namespace . '::')) {
-                        return !$this->translator->hasForLocale($key, $language);
+                        return ! $this->translator->hasForLocale($key, $language);
                     }
 
                     return false;
@@ -173,7 +172,7 @@ class TranslationManager extends NamespacedItemResolver
         $usedStrings = $this->extractor->extract();
 
         // If no language provided, search for all languages supported by application
-        if (is_null($languages) || (is_array($languages) && !count($languages))) {
+        if (is_null($languages) || (is_array($languages) && ! count($languages))) {
             $languages = $this->getSupportedLanguages();
         }
 
@@ -207,13 +206,13 @@ class TranslationManager extends NamespacedItemResolver
                         if (is_array($value)) {
                             foreach (Arr::dot($value) as $k => $val) {
                                 $searchKey = $namespace !== '' ? $namespace . '::' . $key . '.' . $k : $key . '.' . $k;
-                                if (!in_array($searchKey, $strings)) {
+                                if (! in_array($searchKey, $strings)) {
                                     $unusedStrings[$language][$namespace][$key . '.' . $k] = $val;
                                 }
                             }
                         } else {
                             $searchKey = $namespace !== '' ? $namespace . '::' . $key : $key;
-                            if (!in_array($searchKey, $strings)) {
+                            if (! in_array($searchKey, $strings)) {
                                 $unusedStrings[$language][$namespace][$key] = $value;
                             }
                         }
@@ -229,7 +228,7 @@ class TranslationManager extends NamespacedItemResolver
      * Sort strings array either by key or value
      *
      * @param array $data
-     * @param boolean $byKey
+     * @param bool $byKey
      *
      * @return array
      */
@@ -263,7 +262,6 @@ class TranslationManager extends NamespacedItemResolver
 
         return $array;
     }
-
 
     /**
      * Prepare namespaces
@@ -338,7 +336,7 @@ class TranslationManager extends NamespacedItemResolver
         }
 
         $filePath = "{$hintPath}/{$group}.php";
-        if (!$this->files->exists($filePath)) {
+        if (! $this->files->exists($filePath)) {
             // TODO: create file if not exists yet
             File::put($filePath, "<?php \n\nreturn [];");
         }

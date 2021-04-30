@@ -2,18 +2,18 @@
 
 namespace Hexadog\TranslationManager\Providers;
 
-use ReflectionClass;
-use Illuminate\Support\Str;
-use Illuminate\Routing\Router;
-use Illuminate\Filesystem\Filesystem;
+use Hexadog\TranslationManager\Console\Commands;
+use Hexadog\TranslationManager\Facades\TranslationManager as TranslationManagerFacade;
 use Hexadog\TranslationManager\Finder;
 use Hexadog\TranslationManager\Parser;
-use Illuminate\Foundation\AliasLoader;
-use Illuminate\Support\ServiceProvider;
-use Hexadog\TranslationManager\Console\Commands;
-use Illuminate\Contracts\Translation\Translator;
 use Hexadog\TranslationManager\TranslationManager;
-use Hexadog\TranslationManager\Facades\TranslationManager as TranslationManagerFacade;
+use Illuminate\Contracts\Translation\Translator;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Foundation\AliasLoader;
+use Illuminate\Routing\Router;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
+use ReflectionClass;
 
 class PackageServiceProvider extends ServiceProvider
 {
@@ -104,7 +104,7 @@ class PackageServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole() || config('app.env') == 'testing') {
             $this->commands([
                 Commands\MissingCommand::class,
-                Commands\UnusedCommand::class
+                Commands\UnusedCommand::class,
             ]);
         }
     }

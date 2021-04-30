@@ -2,9 +2,9 @@
 
 namespace Hexadog\TranslationManager;
 
+use Hexadog\TranslationManager\Contracts\Parser as ContractsParser;
 use Illuminate\Support\Facades\Config;
 use Symfony\Component\Finder\SplFileInfo;
-use Hexadog\TranslationManager\Contracts\Parser as ContractsParser;
 
 class Parser implements ContractsParser
 {
@@ -43,7 +43,7 @@ class Parser implements ContractsParser
 
         $data = $file->getContents();
         
-        if (!preg_match_all($this->pattern, $data, $matches, PREG_OFFSET_CAPTURE)) {
+        if (! preg_match_all($this->pattern, $data, $matches, PREG_OFFSET_CAPTURE)) {
             // If pattern not found return
             return $strings;
         }

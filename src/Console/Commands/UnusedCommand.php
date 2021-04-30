@@ -42,12 +42,12 @@ class UnusedCommand extends Command
         foreach ($strings as $lang => $namespaces) {
             foreach ($namespaces as $namespace => $translations) {
                 foreach ($translations as $key => $string) {
-                    if (!is_array($string)) {
+                    if (! is_array($string)) {
                         $result[] = [
                             'lang' => $lang,
                             'namespace' => $namespace,
                             'key' => $key,
-                            'string' => $string
+                            'string' => $string,
                         ];
                     } else {
                         foreach (Arr::dot($string) as $k => $string) {
@@ -55,7 +55,7 @@ class UnusedCommand extends Command
                                 'lang' => $lang,
                                 'namespace' => $namespace,
                                 'key' => sprintf('%s.%s', $key, $k),
-                                'string' => $string
+                                'string' => $string,
                             ];
                         }
                     }

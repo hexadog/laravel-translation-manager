@@ -2,8 +2,8 @@
 
 namespace Hexadog\TranslationManager\Facades;
 
-use Illuminate\Support\Facades\Facade;
 use Hexadog\TranslationManager\TranslationManager as Manager;
+use Illuminate\Support\Facades\Facade;
 
 class TranslationManager extends Facade
 {
