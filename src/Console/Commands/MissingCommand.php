@@ -28,8 +28,7 @@ class MissingCommand extends Command
     protected $headers = ['Lang', 'Namespace', 'String'];
 
     /**
-     * Prompt for module's alias name
-     *
+     * Prompt for module's alias name.
      */
     public function handle()
     {
@@ -37,7 +36,7 @@ class MissingCommand extends Command
 
         $strings = \TranslationManager::findMissing($this->option('namespace'), $this->option('lang'), boolval($this->option('fix')));
         $total = 0;
-        
+
         foreach ($strings as $lang => $namespaces) {
             foreach ($namespaces as $namespace => $strings) {
                 foreach ($strings as $string) {
@@ -47,7 +46,7 @@ class MissingCommand extends Command
                         'string' => $string,
                     ];
 
-                    $total++;
+                    ++$total;
                 }
             }
         }

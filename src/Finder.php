@@ -9,14 +9,14 @@ use Symfony\Component\Finder\Finder as SymfonyFinder;
 class Finder implements ContractsFinder
 {
     /**
-     * Directories to search in
+     * Directories to search in.
      *
      * @var array
      */
     protected $directories;
 
     /**
-     * File Extensions to search for
+     * File Extensions to search for.
      *
      * @var array
      */
@@ -34,7 +34,10 @@ class Finder implements ContractsFinder
     /**
      * Find all files that can contain translatable strings.
      *
-     * @return SymfonyFinder|null
+     * @param null|mixed $directories
+     * @param null|mixed $extensions
+     *
+     * @return null|SymfonyFinder
      */
     public function find($directories = null, $extensions = null)
     {

@@ -18,48 +18,22 @@ use ReflectionClass;
 class PackageServiceProvider extends ServiceProvider
 {
     /**
-     * Our root directory for this package to make traversal easier
+     * Our root directory for this package to make traversal easier.
      */
-    const PACKAGE_DIR = __DIR__ . '/../../';
+    public const PACKAGE_DIR = __DIR__.'/../../';
 
     /**
-     * Name for this package to publish assets
+     * Name for this package to publish assets.
      */
-    const PACKAGE_NAME = 'translation-manager';
+    public const PACKAGE_NAME = 'translation-manager';
 
     /**
-     * Pblishers list
+     * Pblishers list.
      */
     protected $publishers = [];
 
     /**
-     * Get Package absolute path
-     *
-     * @param string $path
-     * @return void
-     */
-    protected function getPath($path = '')
-    {
-        // We get the child class
-        $rc = new ReflectionClass(get_class($this));
-
-        return dirname($rc->getFileName()) . '/../../' . $path;
-    }
-
-    /**
-     * Get Module normalized namespace
-     *
-     * @return void
-     */
-    protected function getNormalizedNamespace($prefix = '')
-    {
-        return Str::start(Str::lower(self::PACKAGE_NAME), $prefix);
-    }
-
-    /**
      * Bootstrap the application events.
-     *
-     * @return void
      */
     public function boot(Router $router)
     {
@@ -87,7 +61,30 @@ class PackageServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bootstrap our Configs
+     * Get Package absolute path.
+     *
+     * @param string $path
+     */
+    protected function getPath($path = '')
+    {
+        // We get the child class
+        $rc = new ReflectionClass(get_class($this));
+
+        return dirname($rc->getFileName()).'/../../'.$path;
+    }
+
+    /**
+     * Get Module normalized namespace.
+     *
+     * @param mixed $prefix
+     */
+    protected function getNormalizedNamespace($prefix = '')
+    {
+        return Str::start(Str::lower(self::PACKAGE_NAME), $prefix);
+    }
+
+    /**
+     * Bootstrap our Configs.
      */
     protected function registerConfigs()
     {
@@ -101,7 +98,7 @@ class PackageServiceProvider extends ServiceProvider
 
     protected function strapCommands()
     {
-        if ($this->app->runningInConsole() || config('app.env') == 'testing') {
+        if ($this->app->runningInConsole() || 'testing' == config('app.env')) {
             $this->commands([
                 Commands\MissingCommand::class,
                 Commands\UnusedCommand::class,
@@ -110,14 +107,14 @@ class PackageServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bootstrap our Publishers
+     * Bootstrap our Publishers.
      */
     protected function strapPublishers()
     {
         $configPath = $this->getPath('config');
 
         $this->publishes([
-            "{$configPath}/config.php" => config_path($this->getNormalizedNamespace() . '.php'),
+            "{$configPath}/config.php" => config_path($this->getNormalizedNamespace().'.php'),
         ], 'config');
     }
 }

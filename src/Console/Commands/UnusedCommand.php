@@ -29,8 +29,7 @@ class UnusedCommand extends Command
     protected $headers = ['Lang', 'Namespace', 'Key',  'String'];
 
     /**
-     * Prompt for module's alias name
-     *
+     * Prompt for module's alias name.
      */
     public function handle()
     {
@@ -42,7 +41,7 @@ class UnusedCommand extends Command
         foreach ($strings as $lang => $namespaces) {
             foreach ($namespaces as $namespace => $translations) {
                 foreach ($translations as $key => $string) {
-                    if (! is_array($string)) {
+                    if (!is_array($string)) {
                         $result[] = [
                             'lang' => $lang,
                             'namespace' => $namespace,
@@ -60,7 +59,7 @@ class UnusedCommand extends Command
                         }
                     }
 
-                    $total++;
+                    ++$total;
                 }
             }
         }
