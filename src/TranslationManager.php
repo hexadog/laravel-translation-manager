@@ -16,35 +16,34 @@ use Illuminate\Support\Str;
 class TranslationManager extends NamespacedItemResolver
 {
     /**
-     * Strings extractor
+     * The filesystem instance.
+     *
+     * @var \Illuminate\Filesystem\Filesystem
+     */
+    protected $files;
+    /**
+     * Strings extractor.
      *
      * @var Extractor
      */
     private $extractor;
 
     /**
-     * The filesystem instance.
-     *
-     * @var \Illuminate\Filesystem\Filesystem
-     */
-    protected $files;
-
-    /**
-     * Files Finder
+     * Files Finder.
      *
      * @var Finder
      */
     private $finder;
 
     /**
-     * Supported languages
+     * Supported languages.
      *
      * @var array
      */
     private $languages = ['en'];
 
     /**
-     * Undocumented variable
+     * Undocumented variable.
      *
      * @var [type]
      */
@@ -73,10 +72,9 @@ class TranslationManager extends NamespacedItemResolver
     }
 
     /**
-     * Undocumented function
+     * Undocumented function.
      *
      * @param [type] $lang
-     * @return void
      */
     public function addSupportedLanguage($lang)
     {
@@ -92,12 +90,11 @@ class TranslationManager extends NamespacedItemResolver
     }
 
     /**
-     * Find missing translations for namespace(s) by language(s)
+     * Find missing translations for namespace(s) by language(s).
      *
      * @param string $namespaces
      * @param string $languages
-     *
-     * @return array
+     * @param mixed  $autoFix
      */
     public function findMissing($namespaces = null, $languages = null, $autoFix = false): array
     {
@@ -119,19 +116,18 @@ class TranslationManager extends NamespacedItemResolver
 
             foreach ($hints as $namespace => $path) {
                 $missingStrings[$language][$namespace] = $this->sortIfEnabled($usedStrings->filter(function ($key) use ($language, $namespace) {
-                    if ($namespace === '' || Str::startsWith($key, $namespace . '::')) {
+                    if ('' === $namespace || Str::startsWith($key, $namespace . '::')) {
                         return !$this->translator->hasForLocale($key, $language);
                     }
 
                     return false;
                 })->mapWithKeys(function ($value, $key) use ($namespace) {
-                    return [$key => $namespace !== '' ? preg_replace('/^' . $namespace . '::/', '', $value) : ''];
+                    return [$key => '' !== $namespace ? preg_replace('/^' . $namespace . '::/', '', $value) : ''];
                 })->toArray());
             }
         }
 
-        $missingStrings = $this->arrayUniqueRecursive($missingStrings);
-
+        return $this->arrayUniqueRecursive($missingStrings);
         // if ($autoFix) {
         //     foreach ($missingStrings as $lang => $namespaces) {
         //         foreach ($namespaces as $namespace => $strings) {
@@ -154,18 +150,14 @@ class TranslationManager extends NamespacedItemResolver
         //         }
         //     }
         // }
-
-        return $missingStrings;
     }
 
     /**
-     * Find all unused strings declared in resources files
+     * Find all unused strings declared in resources files.
      *
-     * @param string $namespaces
+     * @param string       $namespaces
      * @param array|string $languages
-     * @param string|null $filename Limit research in language file named as given
-     *
-     * @return array
+     * @param null|string  $filename   Limit research in language file named as given
      */
     public function findUnused($namespaces = null, $languages = null, $filename = null): array
     {
@@ -185,7 +177,7 @@ class TranslationManager extends NamespacedItemResolver
         foreach ($hints as $namespace => $path) {
             // Filter used strings to only keep requested namespaces
             $usedStrings->each(function ($key) use ($namespace, &$strings) {
-                if ($namespace === '' || Str::startsWith($key, $namespace . '::')) {
+                if ('' === $namespace || Str::startsWith($key, $namespace . '::')) {
                     $strings[] = $key;
                 }
             });
@@ -197,7 +189,7 @@ class TranslationManager extends NamespacedItemResolver
 
             foreach ($hints as $namespace => $path) {
                 $unusedStrings[$language][$namespace] = [];
-                $files = $this->finder->find("$path/$language", "php");
+                $files = $this->finder->find("{$path}/{$language}", 'php');
 
                 foreach ($files as $file) {
                     if (!is_null($filename) && $file->getBasename('.php') !== $filename) {
@@ -212,14 +204,14 @@ class TranslationManager extends NamespacedItemResolver
 
                         if (is_array($value)) {
                             foreach (Arr::dot($value) as $k => $val) {
-                                $searchKey = $namespace !== '' ? $namespace . '::' . $key . '.' . $k : $key . '.' . $k;
+                                $searchKey = '' !== $namespace ? $namespace . '::' . $key . '.' . $k : $key . '.' . $k;
 
                                 if (!in_array($searchKey, $strings)) {
                                     $unusedStrings[$language][$namespace][$key . '.' . $k] = $val;
                                 }
                             }
                         } else {
-                            $searchKey = $namespace !== '' ? $namespace . '::' . $key : $key;
+                            $searchKey = '' !== $namespace ? $namespace . '::' . $key : $key;
 
                             if (!in_array($searchKey, $strings)) {
                                 $unusedStrings[$language][$namespace][$key] = $value;
@@ -234,50 +226,9 @@ class TranslationManager extends NamespacedItemResolver
     }
 
     /**
-     * Sort strings array either by key or value
+     * Prepare namespaces.
      *
-     * @param array $data
-     * @param bool $byKey
-     *
-     * @return array
-     */
-    private function sortIfEnabled($data = [], $byKey = false): array
-    {
-        if (Config::get('translation-manager.sort-keys', true)) {
-            return Arr::sort($data, function ($value, $key) use ($byKey) {
-                return $byKey ? strtolower($key) : (is_array($value) ? $this->sortIfEnabled($value, $byKey) : strtolower($value));
-            });
-        }
-
-        return $data;
-    }
-
-    /**
-     * Get unique value recursively
-     *
-     * @param array $array
-     *
-     * @return array
-     */
-    private function arrayUniqueRecursive($array)
-    {
-        $array = array_unique($array, SORT_REGULAR);
-
-        foreach ($array as $key => $elem) {
-            if (is_array($elem)) {
-                $array[$key] = $this->arrayUniqueRecursive($elem);
-            }
-        }
-
-        return $array;
-    }
-
-    /**
-     * Prepare namespaces
-     *
-     * @param string|array $namespaces
-     *
-     * @return Collection
+     * @param array|string $namespaces
      */
     protected function prepareNamespaces($namespaces = null): Collection
     {
@@ -316,7 +267,7 @@ class TranslationManager extends NamespacedItemResolver
     }
 
     /**
-     * Find translation file from translatable key
+     * Find translation file from translatable key.
      *
      * @param string $key
      * @param string $locale
@@ -330,7 +281,7 @@ class TranslationManager extends NamespacedItemResolver
 
         [$namespace, $group, $item] = $this->parseKey($key);
 
-        if (is_null($namespace) || $namespace === '*') {
+        if (is_null($namespace) || '*' === $namespace) {
             // Search into default lang folder
             $hintPath = resource_path("lang/{$locale}");
         } else {
@@ -355,9 +306,10 @@ class TranslationManager extends NamespacedItemResolver
     }
 
     /**
-     * Convert given string to associative
+     * Convert given string to associative.
      *
      * @param string $string
+     * @param mixed  $value
      *
      * @return array
      */
@@ -365,7 +317,7 @@ class TranslationManager extends NamespacedItemResolver
     {
         $array = [];
 
-        if (strpos($value, '.') === false) {
+        if (false === strpos($value, '.')) {
             $array[$value] = $value;
         } else {
             $keys = explode('.', $value);
@@ -381,9 +333,9 @@ class TranslationManager extends NamespacedItemResolver
      * Write a language file from array.
      *
      * @param string $path
-     * @param array $translations
+     * @param array  $translations
      *
-     * @return int|false
+     * @return false|int
      */
     protected function writeTranslationsToFile($translations, $path)
     {
@@ -395,9 +347,47 @@ class TranslationManager extends NamespacedItemResolver
     }
 
     /**
+     * Sort strings array either by key or value.
+     *
+     * @param array $data
+     * @param bool  $byKey
+     */
+    private function sortIfEnabled($data = [], $byKey = false): array
+    {
+        if (Config::get('translation-manager.sort-keys', true)) {
+            return Arr::sort($data, function ($value, $key) use ($byKey) {
+                return $byKey ? strtolower($key) : (is_array($value) ? $this->sortIfEnabled($value, $byKey) : strtolower($value));
+            });
+        }
+
+        return $data;
+    }
+
+    /**
+     * Get unique value recursively.
+     *
+     * @param array $array
+     *
+     * @return array
+     */
+    private function arrayUniqueRecursive($array)
+    {
+        $array = array_unique($array, SORT_REGULAR);
+
+        foreach ($array as $key => $elem) {
+            if (is_array($elem)) {
+                $array[$key] = $this->arrayUniqueRecursive($elem);
+            }
+        }
+
+        return $array;
+    }
+
+    /**
      * Write the lines of the inner array of the language file.
      *
      * @param $array
+     * @param mixed $prepend
      *
      * @return string
      */

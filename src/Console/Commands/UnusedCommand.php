@@ -30,8 +30,7 @@ class UnusedCommand extends Command
     protected $headers = ['Lang', 'Namespace', 'Key',  'String'];
 
     /**
-     * Prompt for module's alias name
-     *
+     * Prompt for module's alias name.
      */
     public function handle()
     {
@@ -61,7 +60,7 @@ class UnusedCommand extends Command
                         }
                     }
 
-                    $total++;
+                    ++$total;
                 }
             }
         }

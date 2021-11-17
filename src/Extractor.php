@@ -10,14 +10,14 @@ use Illuminate\Support\Collection;
 class Extractor implements ContractsExtractor
 {
     /**
-     * Extractor Finder
+     * Extractor Finder.
      *
      * @var Finder
      */
     protected $finder;
-    
+
     /**
-     * Extractor parser
+     * Extractor parser.
      *
      * @var Parser
      */
@@ -31,8 +31,6 @@ class Extractor implements ContractsExtractor
 
     /**
      * Extract translatable strings from the files.
-     *
-     * @return Collection
      */
     public function extract(): Collection
     {
@@ -40,7 +38,7 @@ class Extractor implements ContractsExtractor
 
         // List files
         $files = $this->finder->find();
-        
+
         // Get all translatable strings from files
         foreach ($files as $file) {
             $strings = array_merge($strings, $this->parser->parse($file));
