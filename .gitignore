@@ -5,3 +5,4 @@ composer.lock
 build/
 .DS_Store
 .cache
+*.cache
