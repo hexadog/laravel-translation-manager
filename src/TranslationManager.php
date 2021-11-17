@@ -80,12 +80,12 @@ class TranslationManager extends NamespacedItemResolver
      */
     public function addSupportedLanguage($lang)
     {
-        if (! is_array($lang)) {
+        if (!is_array($lang)) {
             $lang = [$lang];
         }
 
         foreach ($lang as $l) {
-            if (! in_array($l, $this->languages)) {
+            if (!in_array($l, $this->languages)) {
                 $this->languages[] = $l;
             }
         }
@@ -107,7 +107,7 @@ class TranslationManager extends NamespacedItemResolver
         $usedStrings = $this->extractor->extract();
 
         // If no language provided, search for all languages supported by application
-        if (is_null($languages) || (is_array($languages) && ! count($languages))) {
+        if (is_null($languages) || (is_array($languages) && !count($languages))) {
             $languages = $this->getSupportedLanguages();
         }
 
@@ -116,10 +116,11 @@ class TranslationManager extends NamespacedItemResolver
         // Check if translation exists for each languages
         foreach ($languages as $language) {
             $missingStrings[$language] = [];
+
             foreach ($hints as $namespace => $path) {
                 $missingStrings[$language][$namespace] = $this->sortIfEnabled($usedStrings->filter(function ($key) use ($language, $namespace) {
                     if ($namespace === '' || Str::startsWith($key, $namespace . '::')) {
-                        return ! $this->translator->hasForLocale($key, $language);
+                        return !$this->translator->hasForLocale($key, $language);
                     }
 
                     return false;
@@ -162,17 +163,17 @@ class TranslationManager extends NamespacedItemResolver
      *
      * @param string $namespaces
      * @param array|string $languages
-     * @param bool $autoClean
+     * @param string|null $filename Limit research in language file named as given
      *
      * @return array
      */
-    public function findUnused($namespaces = null, $languages = null, bool $autoClean = false): array
+    public function findUnused($namespaces = null, $languages = null, $filename = null): array
     {
         $unusedStrings = [];
         $usedStrings = $this->extractor->extract();
 
         // If no language provided, search for all languages supported by application
-        if (is_null($languages) || (is_array($languages) && ! count($languages))) {
+        if (is_null($languages) || (is_array($languages) && !count($languages))) {
             $languages = $this->getSupportedLanguages();
         }
 
@@ -180,6 +181,7 @@ class TranslationManager extends NamespacedItemResolver
 
         // Filter used strings based on requested namespaces
         $strings = [];
+
         foreach ($hints as $namespace => $path) {
             // Filter used strings to only keep requested namespaces
             $usedStrings->each(function ($key) use ($namespace, &$strings) {
@@ -192,11 +194,16 @@ class TranslationManager extends NamespacedItemResolver
         // check translation usage all supported languages
         foreach ($languages as $language) {
             $unusedStrings[$language] = [];
+
             foreach ($hints as $namespace => $path) {
                 $unusedStrings[$language][$namespace] = [];
                 $files = $this->finder->find("$path/$language", "php");
 
                 foreach ($files as $file) {
+                    if (!is_null($filename) && $file->getBasename('.php') !== $filename) {
+                        continue;
+                    }
+
                     // Get all strings in namespace
                     $translations = include $file->getPathname();
 
@@ -206,13 +213,15 @@ class TranslationManager extends NamespacedItemResolver
                         if (is_array($value)) {
                             foreach (Arr::dot($value) as $k => $val) {
                                 $searchKey = $namespace !== '' ? $namespace . '::' . $key . '.' . $k : $key . '.' . $k;
-                                if (! in_array($searchKey, $strings)) {
+
+                                if (!in_array($searchKey, $strings)) {
                                     $unusedStrings[$language][$namespace][$key . '.' . $k] = $val;
                                 }
                             }
                         } else {
                             $searchKey = $namespace !== '' ? $namespace . '::' . $key : $key;
-                            if (! in_array($searchKey, $strings)) {
+
+                            if (!in_array($searchKey, $strings)) {
                                 $unusedStrings[$language][$namespace][$key] = $value;
                             }
                         }
@@ -278,6 +287,7 @@ class TranslationManager extends NamespacedItemResolver
 
         // Get Translator namespaces
         $loader = $this->translator->getLoader();
+
         if ($loader) {
             foreach ($loader->namespaces() as $hint => $path) {
                 $namespacesCollection->put($hint, $path);
@@ -336,7 +346,7 @@ class TranslationManager extends NamespacedItemResolver
         }
 
         $filePath = "{$hintPath}/{$group}.php";
-        if (! $this->files->exists($filePath)) {
+        if (!$this->files->exists($filePath)) {
             // TODO: create file if not exists yet
             File::put($filePath, "<?php \n\nreturn [];");
         }
@@ -380,7 +390,7 @@ class TranslationManager extends NamespacedItemResolver
         $content = "<?php \n\nreturn [";
         $content .= $this->stringLineMaker($translations);
         $content .= "\n];";
-        
+
         return file_put_contents($path, $content);
     }
 
