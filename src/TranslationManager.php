@@ -127,7 +127,6 @@ class TranslationManager extends NamespacedItemResolver
             }
         }
 
-        return $this->arrayUniqueRecursive($missingStrings);
         // if ($autoFix) {
         //     foreach ($missingStrings as $lang => $namespaces) {
         //         foreach ($namespaces as $namespace => $strings) {
@@ -150,6 +149,8 @@ class TranslationManager extends NamespacedItemResolver
         //         }
         //     }
         // }
+
+        return $this->arrayUniqueRecursive($missingStrings);
     }
 
     /**
@@ -162,6 +163,8 @@ class TranslationManager extends NamespacedItemResolver
     public function findUnused($namespaces = null, $languages = null, $filename = null): array
     {
         $unusedStrings = [];
+
+        // Retreive all used strings
         $usedStrings = $this->extractor->extract();
 
         // If no language provided, search for all languages supported by application
