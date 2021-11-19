@@ -4,5 +4,4 @@ composer.lock
 .php_cs.cache
 build/
 .DS_Store
-.cache
 *.cache
