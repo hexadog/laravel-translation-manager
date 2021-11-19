@@ -2,6 +2,7 @@
 
 namespace Hexadog\TranslationManager\Console\Commands;
 
+use Hexadog\TranslationManager\Facades\TranslationManager;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 
@@ -12,7 +13,7 @@ class UnusedCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'translation:unused {--namespace=*} {--l|lang=*}';
+    protected $signature = 'translation:unused {--namespace=*} {--l|lang=*} {--f|filename=} ';
 
     /**
      * The console command description.
@@ -29,20 +30,19 @@ class UnusedCommand extends Command
     protected $headers = ['Lang', 'Namespace', 'Key',  'String'];
 
     /**
-     * Prompt for module's alias name
-     *
+     * Prompt for module's alias name.
      */
     public function handle()
     {
         $result = [];
 
-        $strings = \TranslationManager::findUnused($this->option('namespace'), $this->option('lang'));
+        $strings = TranslationManager::findUnused($this->option('namespace'), $this->option('lang'), $this->option('filename'));
         $total = 0;
 
         foreach ($strings as $lang => $namespaces) {
             foreach ($namespaces as $namespace => $translations) {
                 foreach ($translations as $key => $string) {
-                    if (! is_array($string)) {
+                    if (!is_array($string)) {
                         $result[] = [
                             'lang' => $lang,
                             'namespace' => $namespace,
@@ -60,7 +60,7 @@ class UnusedCommand extends Command
                         }
                     }
 
-                    $total++;
+                    ++$total;
                 }
             }
         }

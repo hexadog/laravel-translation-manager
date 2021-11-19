@@ -36,8 +36,8 @@ Translation Manager has many features to help you working with translation
 
 - [Configuration](#configuration)
 - [Artisan Commands](#artisan-commands)
-  - [Find unused translation](#find-unused-translation)
-  - [Find missing translation](#find-missing-translation)
+	- [Find unused translation](#find-unused-translation)
+	- [Find missing translation](#find-missing-translation)
 
 ### Configuration
 This is the default contents of the configuration:
@@ -91,6 +91,11 @@ Find all unused translation in your app for specifig language
 php artisan translation:unused --lang=fr
 ```
 
+Find all unused translation in your app for a specific language file
+```shell
+php artisan translation:unused --filename=buttons
+```
+__This example will search unused translation only in file `buttons.php` for all languages in `directories` configured.__
 
 #### Find missing translation
 Find all missing translation in your app
