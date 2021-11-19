@@ -113,20 +113,20 @@ class TranslationManager extends NamespacedItemResolver
         // Check if translation exists for each languages
         foreach ($languages as $language) {
             $missingStrings[$language] = [];
+
             foreach ($hints as $namespace => $path) {
                 $missingStrings[$language][$namespace] = $this->sortIfEnabled($usedStrings->filter(function ($key) use ($language, $namespace) {
-                    if ('' === $namespace || Str::startsWith($key, $namespace.'::')) {
+                    if ('' === $namespace || Str::startsWith($key, $namespace . '::')) {
                         return !$this->translator->hasForLocale($key, $language);
                     }
 
                     return false;
                 })->mapWithKeys(function ($value, $key) use ($namespace) {
-                    return [$key => '' !== $namespace ? preg_replace('/^'.$namespace.'::/', '', $value) : ''];
+                    return [$key => '' !== $namespace ? preg_replace('/^' . $namespace . '::/', '', $value) : ''];
                 })->toArray());
             }
         }
 
-        return $this->arrayUniqueRecursive($missingStrings);
         // if ($autoFix) {
         //     foreach ($missingStrings as $lang => $namespaces) {
         //         foreach ($namespaces as $namespace => $strings) {
@@ -149,6 +149,8 @@ class TranslationManager extends NamespacedItemResolver
         //         }
         //     }
         // }
+
+        return $this->arrayUniqueRecursive($missingStrings);
     }
 
     /**
@@ -156,10 +158,13 @@ class TranslationManager extends NamespacedItemResolver
      *
      * @param string       $namespaces
      * @param array|string $languages
+     * @param null|string  $filename   Limit research in language file named as given
      */
-    public function findUnused($namespaces = null, $languages = null, bool $autoClean = false): array
+    public function findUnused($namespaces = null, $languages = null, $filename = null): array
     {
         $unusedStrings = [];
+
+        // Retreive all used strings
         $usedStrings = $this->extractor->extract();
 
         // If no language provided, search for all languages supported by application
@@ -171,10 +176,11 @@ class TranslationManager extends NamespacedItemResolver
 
         // Filter used strings based on requested namespaces
         $strings = [];
+
         foreach ($hints as $namespace => $path) {
             // Filter used strings to only keep requested namespaces
             $usedStrings->each(function ($key) use ($namespace, &$strings) {
-                if ('' === $namespace || Str::startsWith($key, $namespace.'::')) {
+                if ('' === $namespace || Str::startsWith($key, $namespace . '::')) {
                     $strings[] = $key;
                 }
             });
@@ -183,26 +189,33 @@ class TranslationManager extends NamespacedItemResolver
         // check translation usage all supported languages
         foreach ($languages as $language) {
             $unusedStrings[$language] = [];
+
             foreach ($hints as $namespace => $path) {
                 $unusedStrings[$language][$namespace] = [];
                 $files = $this->finder->find("{$path}/{$language}", 'php');
 
                 foreach ($files as $file) {
+                    if (!is_null($filename) && $file->getBasename('.php') !== $filename) {
+                        continue;
+                    }
+
                     // Get all strings in namespace
                     $translations = include $file->getPathname();
 
                     foreach ($translations as $key => $value) {
-                        $key = $file->getBasename('.php').'.'.$key;
+                        $key = $file->getBasename('.php') . '.' . $key;
 
                         if (is_array($value)) {
                             foreach (Arr::dot($value) as $k => $val) {
-                                $searchKey = '' !== $namespace ? $namespace.'::'.$key.'.'.$k : $key.'.'.$k;
+                                $searchKey = '' !== $namespace ? $namespace . '::' . $key . '.' . $k : $key . '.' . $k;
+
                                 if (!in_array($searchKey, $strings)) {
-                                    $unusedStrings[$language][$namespace][$key.'.'.$k] = $val;
+                                    $unusedStrings[$language][$namespace][$key . '.' . $k] = $val;
                                 }
                             }
                         } else {
-                            $searchKey = '' !== $namespace ? $namespace.'::'.$key : $key;
+                            $searchKey = '' !== $namespace ? $namespace . '::' . $key : $key;
+
                             if (!in_array($searchKey, $strings)) {
                                 $unusedStrings[$language][$namespace][$key] = $value;
                             }
@@ -228,6 +241,7 @@ class TranslationManager extends NamespacedItemResolver
 
         // Get Translator namespaces
         $loader = $this->translator->getLoader();
+
         if ($loader) {
             foreach ($loader->namespaces() as $hint => $path) {
                 $namespacesCollection->put($hint, $path);
@@ -278,7 +292,7 @@ class TranslationManager extends NamespacedItemResolver
 
             // Check if hint exists for namespace
             if (array_key_exists($namespace, $hints)) {
-                $hintPath = Arr::get($hints, $namespace)."/{$locale}";
+                $hintPath = Arr::get($hints, $namespace) . "/{$locale}";
             } else {
                 // TODO: are we sure we create file in default path ???
                 $hintPath = resource_path("lang/{$locale}");
@@ -386,7 +400,7 @@ class TranslationManager extends NamespacedItemResolver
 
         foreach ($array as $key => $value) {
             if (is_array($value)) {
-                $value = $this->stringLineMaker($value, $prepend.'    ');
+                $value = $this->stringLineMaker($value, $prepend . '    ');
                 $output .= "\n{$prepend}    '{$key}' => [{$value}\n{$prepend}    ],";
             } else {
                 $value = str_replace('\"', '"', addslashes($value));

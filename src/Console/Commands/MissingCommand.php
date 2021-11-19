@@ -2,6 +2,7 @@
 
 namespace Hexadog\TranslationManager\Console\Commands;
 
+use Hexadog\TranslationManager\Facades\TranslationManager;
 use Illuminate\Console\Command;
 
 class MissingCommand extends Command
@@ -34,7 +35,7 @@ class MissingCommand extends Command
     {
         $result = [];
 
-        $strings = \TranslationManager::findMissing($this->option('namespace'), $this->option('lang'), boolval($this->option('fix')));
+        $strings = TranslationManager::findMissing($this->option('namespace'), $this->option('lang'), boolval($this->option('fix')));
         $total = 0;
 
         foreach ($strings as $lang => $namespaces) {

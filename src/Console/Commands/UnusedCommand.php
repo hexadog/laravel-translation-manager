@@ -2,6 +2,7 @@
 
 namespace Hexadog\TranslationManager\Console\Commands;
 
+use Hexadog\TranslationManager\Facades\TranslationManager;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 
@@ -12,7 +13,7 @@ class UnusedCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'translation:unused {--namespace=*} {--l|lang=*}';
+    protected $signature = 'translation:unused {--namespace=*} {--l|lang=*} {--f|filename=} ';
 
     /**
      * The console command description.
@@ -35,7 +36,7 @@ class UnusedCommand extends Command
     {
         $result = [];
 
-        $strings = \TranslationManager::findUnused($this->option('namespace'), $this->option('lang'));
+        $strings = TranslationManager::findUnused($this->option('namespace'), $this->option('lang'), $this->option('filename'));
         $total = 0;
 
         foreach ($strings as $lang => $namespaces) {
