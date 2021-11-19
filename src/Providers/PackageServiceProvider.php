@@ -114,7 +114,7 @@ class PackageServiceProvider extends ServiceProvider
         $configPath = $this->getPath('config');
 
         $this->publishes([
-            "{$configPath}/config.php" => config_path($this->getNormalizedNamespace() . '.php'),
+            "{$configPath}/config.php" => config_path($this->getNormalizedNamespace().'.php'),
         ], 'config');
     }
 }

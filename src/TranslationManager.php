@@ -149,7 +149,7 @@ class TranslationManager extends NamespacedItemResolver
         //         }
         //     }
         // }
-
+      
         return $this->arrayUniqueRecursive($missingStrings);
     }
 
@@ -203,7 +203,7 @@ class TranslationManager extends NamespacedItemResolver
                     $translations = include $file->getPathname();
 
                     foreach ($translations as $key => $value) {
-                        $key = $file->getBasename('.php') . '.' . $key;
+                        $key = $file->getBasename('.php').'.'.$key;
 
                         if (is_array($value)) {
                             foreach (Arr::dot($value) as $k => $val) {
@@ -292,7 +292,7 @@ class TranslationManager extends NamespacedItemResolver
 
             // Check if hint exists for namespace
             if (array_key_exists($namespace, $hints)) {
-                $hintPath = Arr::get($hints, $namespace) . "/{$locale}";
+                $hintPath = Arr::get($hints, $namespace)."/{$locale}";
             } else {
                 // TODO: are we sure we create file in default path ???
                 $hintPath = resource_path("lang/{$locale}");
@@ -400,7 +400,7 @@ class TranslationManager extends NamespacedItemResolver
 
         foreach ($array as $key => $value) {
             if (is_array($value)) {
-                $value = $this->stringLineMaker($value, $prepend . '    ');
+                $value = $this->stringLineMaker($value, $prepend.'    ');
                 $output .= "\n{$prepend}    '{$key}' => [{$value}\n{$prepend}    ],";
             } else {
                 $value = str_replace('\"', '"', addslashes($value));
