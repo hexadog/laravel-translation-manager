@@ -122,7 +122,7 @@ class TranslationManager extends NamespacedItemResolver
 
                     return false;
                 })->mapWithKeys(function ($value, $key) use ($namespace) {
-                    return [$key => '' !== $namespace ? preg_replace('/^' . $namespace . '::/', '', $value) : ''];
+                    return [$key => '' !== $namespace ? preg_replace('/^' . $namespace . '::/', '', $value) : $value];
                 })->toArray());
             }
         }
@@ -237,8 +237,6 @@ class TranslationManager extends NamespacedItemResolver
     {
         $namespacesCollection = collect();
 
-        $this->translator->addNamespace('hexadog', resource_path('lang'));
-
         // Get Translator namespaces
         $loader = $this->translator->getLoader();
 
@@ -258,14 +256,14 @@ class TranslationManager extends NamespacedItemResolver
             $namespacesCollection = $namespacesCollection->filter(function ($path, $namespace) use ($namespaces) {
                 return $namespaces->contains($namespace);
             });
-        } else {
-            // Add default namespace
-            $namespacesCollection->put('', resource_path('lang'));
         }
+
+        // Add default namespace
+        $namespacesCollection->put('', resource_path('lang'));
 
         // Return namespaces collection after removing non existing paths
         return $namespacesCollection->filter(function ($path) {
-            return file_exists($path);
+            return file_exists($path) ? $path : false;
         });
     }
 
