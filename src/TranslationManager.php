@@ -21,6 +21,7 @@ class TranslationManager extends NamespacedItemResolver
      * @var \Illuminate\Filesystem\Filesystem
      */
     protected $files;
+
     /**
      * Strings extractor.
      *
@@ -259,7 +260,7 @@ class TranslationManager extends NamespacedItemResolver
         }
 
         // Add default namespace
-        $namespacesCollection->put('', resource_path('lang'));
+        $namespacesCollection->put('', app()->langPath());
 
         // Return namespaces collection after removing non existing paths
         return $namespacesCollection->filter(function ($path) {
@@ -284,7 +285,7 @@ class TranslationManager extends NamespacedItemResolver
 
         if (is_null($namespace) || '*' === $namespace) {
             // Search into default lang folder
-            $hintPath = resource_path("lang/{$locale}");
+            $hintPath = app()->langPath() . DIRECTORY_SEPARATOR . $locale;
         } else {
             $hints = $loader->namespaces();
 
@@ -293,7 +294,7 @@ class TranslationManager extends NamespacedItemResolver
                 $hintPath = Arr::get($hints, $namespace) . "/{$locale}";
             } else {
                 // TODO: are we sure we create file in default path ???
-                $hintPath = resource_path("lang/{$locale}");
+                $hintPath = app()->langPath() . DIRECTORY_SEPARATOR . $locale;
             }
         }
 
