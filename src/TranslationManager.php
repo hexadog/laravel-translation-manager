@@ -21,6 +21,7 @@ class TranslationManager extends NamespacedItemResolver
      * @var \Illuminate\Filesystem\Filesystem
      */
     protected $files;
+
     /**
      * Strings extractor.
      *
