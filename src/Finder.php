@@ -27,7 +27,7 @@ class Finder implements ContractsFinder
      */
     public function __construct()
     {
-        $this->directories = Config::get('translation-manager.directories', ['app', 'resources']);
+        $this->directories = Config::get('translation-manager.directories', ['app', 'resources', 'lang']);
         $this->extensions = Config::get('translation-manager.extensions', ['php', 'js']);
     }
 
