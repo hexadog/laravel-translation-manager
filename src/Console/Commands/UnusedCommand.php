@@ -27,7 +27,7 @@ class UnusedCommand extends Command
      *
      * @var array
      */
-    protected $headers = ['Lang', 'Namespace', 'Key',  'String'];
+    protected $headers = ['Lang', 'Namespace', 'Key', 'String'];
 
     /**
      * Prompt for module's alias name.
