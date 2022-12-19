@@ -388,8 +388,8 @@ class TranslationManager extends NamespacedItemResolver
     /**
      * Write the lines of the inner array of the language file.
      *
-     * @param $array
      * @param mixed $prepend
+     * @param mixed $array
      *
      * @return string
      */
