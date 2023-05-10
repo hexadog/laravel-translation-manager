@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hexadog\TranslationManager;
 
 use Hexadog\TranslationManager\Contracts\Finder;
@@ -79,12 +81,12 @@ class TranslationManager extends NamespacedItemResolver
      */
     public function addSupportedLanguage($lang)
     {
-        if (!is_array($lang)) {
+        if (! is_array($lang)) {
             $lang = [$lang];
         }
 
         foreach ($lang as $l) {
-            if (!in_array($l, $this->languages)) {
+            if (! in_array($l, $this->languages)) {
                 $this->languages[] = $l;
             }
         }
@@ -93,9 +95,9 @@ class TranslationManager extends NamespacedItemResolver
     /**
      * Find missing translations for namespace(s) by language(s).
      *
-     * @param string $namespaces
-     * @param string $languages
-     * @param mixed  $autoFix
+     * @param  string  $namespaces
+     * @param  string  $languages
+     * @param  mixed  $autoFix
      */
     public function findMissing($namespaces = null, $languages = null, $autoFix = false): array
     {
@@ -105,7 +107,7 @@ class TranslationManager extends NamespacedItemResolver
         $usedStrings = $this->extractor->extract();
 
         // If no language provided, search for all languages supported by application
-        if (is_null($languages) || (is_array($languages) && !count($languages))) {
+        if (is_null($languages) || (is_array($languages) && ! count($languages))) {
             $languages = $this->getSupportedLanguages();
         }
 
@@ -118,7 +120,7 @@ class TranslationManager extends NamespacedItemResolver
             foreach ($hints as $namespace => $path) {
                 $missingStrings[$language][$namespace] = $this->sortIfEnabled($usedStrings->filter(function ($key) use ($language, $namespace) {
                     if ('' === $namespace || Str::startsWith($key, $namespace . '::')) {
-                        return !$this->translator->hasForLocale($key, $language);
+                        return ! $this->translator->hasForLocale($key, $language);
                     }
 
                     return false;
@@ -157,9 +159,9 @@ class TranslationManager extends NamespacedItemResolver
     /**
      * Find all unused strings declared in resources files.
      *
-     * @param string       $namespaces
-     * @param array|string $languages
-     * @param null|string  $filename   Limit research in language file named as given
+     * @param  string  $namespaces
+     * @param  array|string  $languages
+     * @param  null|string  $filename   Limit research in language file named as given
      */
     public function findUnused($namespaces = null, $languages = null, $filename = null): array
     {
@@ -169,7 +171,7 @@ class TranslationManager extends NamespacedItemResolver
         $usedStrings = $this->extractor->extract();
 
         // If no language provided, search for all languages supported by application
-        if (is_null($languages) || (is_array($languages) && !count($languages))) {
+        if (is_null($languages) || (is_array($languages) && ! count($languages))) {
             $languages = $this->getSupportedLanguages();
         }
 
@@ -196,7 +198,7 @@ class TranslationManager extends NamespacedItemResolver
                 $files = $this->finder->find("{$path}/{$language}", 'php');
 
                 foreach ($files as $file) {
-                    if (!is_null($filename) && $file->getBasename('.php') !== $filename) {
+                    if (! is_null($filename) && $file->getBasename('.php') !== $filename) {
                         continue;
                     }
 
@@ -210,14 +212,14 @@ class TranslationManager extends NamespacedItemResolver
                             foreach (Arr::dot($value) as $k => $val) {
                                 $searchKey = '' !== $namespace ? $namespace . '::' . $key . '.' . $k : $key . '.' . $k;
 
-                                if (!in_array($searchKey, $strings)) {
+                                if (! in_array($searchKey, $strings)) {
                                     $unusedStrings[$language][$namespace][$key . '.' . $k] = $val;
                                 }
                             }
                         } else {
                             $searchKey = '' !== $namespace ? $namespace . '::' . $key : $key;
 
-                            if (!in_array($searchKey, $strings)) {
+                            if (! in_array($searchKey, $strings)) {
                                 $unusedStrings[$language][$namespace][$key] = $value;
                             }
                         }
@@ -232,7 +234,7 @@ class TranslationManager extends NamespacedItemResolver
     /**
      * Prepare namespaces.
      *
-     * @param array|string $namespaces
+     * @param  array|string  $namespaces
      */
     protected function prepareNamespaces($namespaces = null): Collection
     {
@@ -271,9 +273,8 @@ class TranslationManager extends NamespacedItemResolver
     /**
      * Find translation file from translatable key.
      *
-     * @param string $key
-     * @param string $locale
-     *
+     * @param  string  $key
+     * @param  string  $locale
      * @return string
      */
     protected function getTranslationFilePath($key, $locale = 'en')
@@ -299,7 +300,7 @@ class TranslationManager extends NamespacedItemResolver
         }
 
         $filePath = "{$hintPath}/{$group}.php";
-        if (!$this->files->exists($filePath)) {
+        if (! $this->files->exists($filePath)) {
             // TODO: create file if not exists yet
             File::put($filePath, "<?php \n\nreturn [];");
         }
@@ -310,9 +311,8 @@ class TranslationManager extends NamespacedItemResolver
     /**
      * Convert given string to associative.
      *
-     * @param string $string
-     * @param mixed  $value
-     *
+     * @param  string  $string
+     * @param  mixed  $value
      * @return array
      */
     protected function undotStringToArray($value)
@@ -334,9 +334,8 @@ class TranslationManager extends NamespacedItemResolver
     /**
      * Write a language file from array.
      *
-     * @param string $path
-     * @param array  $translations
-     *
+     * @param  string  $path
+     * @param  array  $translations
      * @return false|int
      */
     protected function writeTranslationsToFile($translations, $path)
@@ -351,8 +350,8 @@ class TranslationManager extends NamespacedItemResolver
     /**
      * Sort strings array either by key or value.
      *
-     * @param array $data
-     * @param bool  $byKey
+     * @param  array  $data
+     * @param  bool  $byKey
      */
     private function sortIfEnabled($data = [], $byKey = false): array
     {
@@ -368,8 +367,7 @@ class TranslationManager extends NamespacedItemResolver
     /**
      * Get unique value recursively.
      *
-     * @param array $array
-     *
+     * @param  array  $array
      * @return array
      */
     private function arrayUniqueRecursive($array)
@@ -388,9 +386,8 @@ class TranslationManager extends NamespacedItemResolver
     /**
      * Write the lines of the inner array of the language file.
      *
-     * @param mixed $prepend
-     * @param mixed $array
-     *
+     * @param  mixed  $prepend
+     * @param  mixed  $array
      * @return string
      */
     private function stringLineMaker($array, $prepend = '')

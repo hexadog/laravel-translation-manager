@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hexadog\TranslationManager\Facades;
 
 use Hexadog\TranslationManager\TranslationManager as Manager;
