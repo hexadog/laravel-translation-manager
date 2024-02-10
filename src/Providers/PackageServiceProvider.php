@@ -99,7 +99,7 @@ class PackageServiceProvider extends ServiceProvider
 
     protected function strapCommands()
     {
-        if ($this->app->runningInConsole() || 'testing' == config('app.env')) {
+        if ($this->app->runningInConsole() || config('app.env') == 'testing') {
             $this->commands([
                 Commands\MissingCommand::class,
                 Commands\UnusedCommand::class,
