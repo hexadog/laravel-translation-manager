@@ -119,13 +119,13 @@ class TranslationManager extends NamespacedItemResolver
 
             foreach ($hints as $namespace => $path) {
                 $missingStrings[$language][$namespace] = $this->sortIfEnabled($usedStrings->filter(function ($key) use ($language, $namespace) {
-                    if ('' === $namespace || Str::startsWith($key, $namespace . '::')) {
+                    if ($namespace === '' || Str::startsWith($key, $namespace . '::')) {
                         return ! $this->translator->hasForLocale($key, $language);
                     }
 
                     return false;
                 })->mapWithKeys(function ($value, $key) use ($namespace) {
-                    return [$key => '' !== $namespace ? preg_replace('/^' . $namespace . '::/', '', $value) : $value];
+                    return [$key => $namespace !== '' ? preg_replace('/^' . $namespace . '::/', '', $value) : $value];
                 })->toArray());
             }
         }
@@ -161,7 +161,7 @@ class TranslationManager extends NamespacedItemResolver
      *
      * @param  string  $namespaces
      * @param  array|string  $languages
-     * @param  null|string  $filename   Limit research in language file named as given
+     * @param  null|string  $filename  Limit research in language file named as given
      */
     public function findUnused($namespaces = null, $languages = null, $filename = null): array
     {
@@ -183,7 +183,7 @@ class TranslationManager extends NamespacedItemResolver
         foreach ($hints as $namespace => $path) {
             // Filter used strings to only keep requested namespaces
             $usedStrings->each(function ($key) use ($namespace, &$strings) {
-                if ('' === $namespace || Str::startsWith($key, $namespace . '::')) {
+                if ($namespace === '' || Str::startsWith($key, $namespace . '::')) {
                     $strings[] = $key;
                 }
             });
@@ -210,14 +210,14 @@ class TranslationManager extends NamespacedItemResolver
 
                         if (is_array($value)) {
                             foreach (Arr::dot($value) as $k => $val) {
-                                $searchKey = '' !== $namespace ? $namespace . '::' . $key . '.' . $k : $key . '.' . $k;
+                                $searchKey = $namespace !== '' ? $namespace . '::' . $key . '.' . $k : $key . '.' . $k;
 
                                 if (! in_array($searchKey, $strings)) {
                                     $unusedStrings[$language][$namespace][$key . '.' . $k] = $val;
                                 }
                             }
                         } else {
-                            $searchKey = '' !== $namespace ? $namespace . '::' . $key : $key;
+                            $searchKey = $namespace !== '' ? $namespace . '::' . $key : $key;
 
                             if (! in_array($searchKey, $strings)) {
                                 $unusedStrings[$language][$namespace][$key] = $value;
@@ -284,7 +284,7 @@ class TranslationManager extends NamespacedItemResolver
 
         [$namespace, $group, $item] = $this->parseKey($key);
 
-        if (is_null($namespace) || '*' === $namespace) {
+        if (is_null($namespace) || $namespace === '*') {
             // Search into default lang folder
             $hintPath = app()->langPath() . DIRECTORY_SEPARATOR . $locale;
         } else {
@@ -319,7 +319,7 @@ class TranslationManager extends NamespacedItemResolver
     {
         $array = [];
 
-        if (false === strpos($value, '.')) {
+        if (strpos($value, '.') === false) {
             $array[$value] = $value;
         } else {
             $keys = explode('.', $value);
