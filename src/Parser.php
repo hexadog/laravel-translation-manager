@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hexadog\TranslationManager;
 
 use Hexadog\TranslationManager\Contracts\Parser as ContractsParser;
@@ -40,7 +42,7 @@ class Parser implements ContractsParser
 
         $data = $file->getContents();
 
-        if (!preg_match_all($this->pattern, $data, $matches, PREG_OFFSET_CAPTURE)) {
+        if (! preg_match_all($this->pattern, $data, $matches, PREG_OFFSET_CAPTURE)) {
             // If pattern not found return
             return $strings;
         }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hexadog\TranslationManager\Console\Commands;
 
 use Hexadog\TranslationManager\Facades\TranslationManager;
@@ -42,12 +44,12 @@ class MissingCommand extends Command
             foreach ($namespaces as $namespace => $strings) {
                 foreach ($strings as $string) {
                     $result[] = [
-                        'lang' => $lang,
+                        'lang'      => $lang,
                         'namespace' => $namespace,
-                        'string' => $string,
+                        'string'    => $string,
                     ];
 
-                    ++$total;
+                    $total++;
                 }
             }
         }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hexadog\TranslationManager\Contracts;
 
 use Illuminate\Support\Collection;

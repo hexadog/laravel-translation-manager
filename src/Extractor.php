@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hexadog\TranslationManager;
 
 use Hexadog\TranslationManager\Contracts\Extractor as ContractsExtractor;

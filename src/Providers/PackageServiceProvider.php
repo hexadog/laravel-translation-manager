@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hexadog\TranslationManager\Providers;
 
 use Hexadog\TranslationManager\Console\Commands;
@@ -62,7 +64,7 @@ class PackageServiceProvider extends ServiceProvider
     /**
      * Get Package absolute path.
      *
-     * @param string $path
+     * @param  string  $path
      */
     protected function getPath($path = '')
     {
@@ -75,7 +77,7 @@ class PackageServiceProvider extends ServiceProvider
     /**
      * Get Module normalized namespace.
      *
-     * @param mixed $prefix
+     * @param  mixed  $prefix
      */
     protected function getNormalizedNamespace($prefix = '')
     {
@@ -97,7 +99,7 @@ class PackageServiceProvider extends ServiceProvider
 
     protected function strapCommands()
     {
-        if ($this->app->runningInConsole() || 'testing' == config('app.env')) {
+        if ($this->app->runningInConsole() || config('app.env') == 'testing') {
             $this->commands([
                 Commands\MissingCommand::class,
                 Commands\UnusedCommand::class,

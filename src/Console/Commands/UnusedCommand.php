@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hexadog\TranslationManager\Console\Commands;
 
 use Hexadog\TranslationManager\Facades\TranslationManager;
@@ -42,25 +44,25 @@ class UnusedCommand extends Command
         foreach ($strings as $lang => $namespaces) {
             foreach ($namespaces as $namespace => $translations) {
                 foreach ($translations as $key => $string) {
-                    if (!is_array($string)) {
+                    if (! is_array($string)) {
                         $result[] = [
-                            'lang' => $lang,
+                            'lang'      => $lang,
                             'namespace' => $namespace,
-                            'key' => $key,
-                            'string' => $string,
+                            'key'       => $key,
+                            'string'    => $string,
                         ];
                     } else {
                         foreach (Arr::dot($string) as $k => $string) {
                             $result[] = [
-                                'lang' => $lang,
+                                'lang'      => $lang,
                                 'namespace' => $namespace,
-                                'key' => sprintf('%s.%s', $key, $k),
-                                'string' => $string,
+                                'key'       => sprintf('%s.%s', $key, $k),
+                                'string'    => $string,
                             ];
                         }
                     }
 
-                    ++$total;
+                    $total++;
                 }
             }
         }

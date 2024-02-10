@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hexadog\TranslationManager;
 
 use Hexadog\TranslationManager\Contracts\Finder as ContractsFinder;
@@ -34,9 +36,8 @@ class Finder implements ContractsFinder
     /**
      * Find all files that can contain translatable strings.
      *
-     * @param null|mixed $directories
-     * @param null|mixed $extensions
-     *
+     * @param  null|mixed  $directories
+     * @param  null|mixed  $extensions
      * @return null|SymfonyFinder
      */
     public function find($directories = null, $extensions = null)
